@@ -21,7 +21,16 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { frontmatter } = getPost('guides', params.slug)
-    return { title: frontmatter.title, description: frontmatter.excerpt }
+    return {
+      title: frontmatter.title,
+      description: frontmatter.excerpt,
+      openGraph: {
+        title: frontmatter.title,
+        description: frontmatter.excerpt,
+        type: 'article',
+        publishedTime: frontmatter.date,
+      },
+    }
   } catch {
     return {}
   }

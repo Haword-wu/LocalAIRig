@@ -1,0 +1,194 @@
+---
+title: "Google Gemma 4: Hardware Requirements and Local Deployment Guide (2026)"
+date: "2026-04-03"
+excerpt: "Gemma 4's MoE architecture means a 26B model runs on 16 GB of VRAM. Here's what you need, what to expect, and how to get it running in under 3 minutes."
+category: "models"
+tags: ["gemma", "deployment", "ollama", "lm-studio", "moe", "getting-started"]
+models: ["gemma"]
+featured: false
+affiliateDisclosure: true
+---
+
+*Last updated: April 2026 — covers Gemma 4 released April 2, 2026*
+
+Google released Gemma 4 on April 2, 2026 — the most capable version of the Gemma series yet. Four model sizes, native multimodal support across all of them, and an architecture trick that makes the flagship 26B model run on hardware most people already own.
+
+Here's the full breakdown.
+
+---
+
+## What Is Gemma 4?
+
+Gemma 4 comes in four sizes with two different architectures:
+
+| Model | Architecture | Size (Q4 quant) | Best For |
+|---|---|---|---|
+| **Gemma 4 E2B** | Dense 2.3B | ~2.5 GB | Mobile, Raspberry Pi, quick experiments |
+| **Gemma 4 E4B** | Dense 4.5B | ~5 GB | Lightweight daily use |
+| **Gemma 4 26B** ⭐ | MoE — 3.8B active | ~18 GB | **Main recommendation** |
+| **Gemma 4 31B** | Dense 30.7B | ~20 GB | Maximum quality |
+
+**Three things worth knowing before we go further:**
+
+### 1. Every size supports image input natively
+
+All four Gemma 4 models are natively multimodal — they accept images as input out of the box. You can hand them a photo, a diagram, a screenshot, and they'll reason about it. No separate vision model required.
+
+### 2. The E2B actually runs on a phone — usably
+
+The 2.3B model isn't just technically deployable on mobile hardware — it produces output at a speed that's actually usable. Enable airplane mode, open your local AI app, and it still works. That's a legitimately impressive achievement for a model this small.
+
+### 3. The 26B uses MoE architecture — this matters for your hardware decision
+
+MoE (Mixture of Experts) is the key to understanding why the 26B is the recommended size. Here's the intuition:
+
+Instead of activating all 26 billion parameters for every single token, the MoE model routes each computation through only the most relevant subset of "expert" layers. In practice, only **3.8B parameters are active at any given moment** — even though the full 26B parameter pool is available for specialization.
+
+The result: **a 26B model that runs at roughly 7B speed, on 7B-level VRAM requirements, at a quality level much closer to full 26B.**
+
+The tradeoff is that the full model file (~18 GB) still needs to fit in memory — but active inference is fast and VRAM-efficient. On benchmarks, the 26B MoE hit **88.3% on AIME 2026** (a rigorous math competition test), compared to 89.2% for the dense 31B. The gap is smaller than the hardware difference.
+
+---
+
+## Hardware Requirements
+
+### VRAM Reference Table
+
+| Model | Q4 Quantization | Full Precision (BF16) |
+|---|---|---|
+| Gemma 4 E2B | ~2 GB | ~5 GB |
+| Gemma 4 E4B | ~4 GB | ~10 GB |
+| Gemma 4 26B MoE | ~18 GB (load) / ~8 GB (active inference) | — |
+| Gemma 4 31B | ~20 GB | ~62 GB |
+
+<Callout type="info">
+**The 26B MoE VRAM situation explained:** The model file is 18 GB and needs to be loaded into memory. Active inference only uses ~8 GB of VRAM at a time. So: you need 16+ GB VRAM to load it, but inference *runs* more like a 7–8B model in terms of speed and resource usage.
+</Callout>
+
+---
+
+### GPU Recommendations
+
+#### E2B / E4B — Entry Models (8 GB VRAM minimum)
+
+Any GPU with 8 GB of VRAM runs these comfortably. Honest assessment: these small models are better suited to phones, mini PCs, and Raspberry Pi-style devices. Running them on a desktop works fine for testing and getting familiar with the local AI workflow, but they're not strong enough for production daily use.
+
+---
+
+#### Gemma 4 26B MoE — The Recommended Build (16 GB VRAM)
+
+This is the sweet spot. 16 GB VRAM loads the full quantized model and inference runs fast thanks to MoE's efficient activation pattern. At 16 GB you're right at the edge — it works well for most use cases, but if you're doing extended conversations with large context windows, 24 GB gives you more breathing room.
+
+**Full recommended build for Gemma 4 26B:**
+
+| Component | Recommendation | Est. Price |
+|---|---|---|
+| CPU | AMD Ryzen 5 5600 | ~$120 |
+| Motherboard | B550 ATX | ~$100 |
+| RAM | 32 GB DDR4 (2×16 GB) | ~$55 |
+| GPU | RTX 5060 Ti 16 GB | ~$549 |
+| Storage | 1 TB NVMe SSD | ~$75 |
+| PSU | 750W 80+ Gold | ~$80 |
+| Case + Cooling | Mid-tower + air cooler | ~$100 |
+| **Total** | | **~$1,080** |
+
+---
+
+#### Gemma 4 31B — Maximum Quality (24 GB VRAM)
+
+The dense 31B model needs 24 GB VRAM minimum. If you already own an RTX 4090, run it — no issues. If you're building specifically to run 31B, that's a significant investment. It makes more sense if you have multiple high-VRAM use cases (AI image generation, video model training, etc.).
+
+**High-end build for Gemma 4 31B:**
+
+| Component | Recommendation | Est. Price |
+|---|---|---|
+| CPU | AMD Ryzen 9 9900X | ~$450 |
+| Motherboard | X870E | ~$300 |
+| RAM | 128 GB DDR5 (4×32 GB) | ~$380 |
+| GPU | RTX 4090 24 GB | ~$1,999 |
+| Storage | 4 TB NVMe Gen4 SSD | ~$400 |
+| PSU | 1,200W 80+ Gold Full Modular | ~$200 |
+| Case + Cooling | 360mm AIO + premium case | ~$250 |
+| **Total** | | **~$3,980** |
+
+---
+
+### Apple Silicon Mac Options
+
+Apple's unified memory functions as shared CPU/GPU memory — the full pool is available for model loading.
+
+| Mac Config | Runnable Models |
+|---|---|
+| 8 GB unified | E2B only |
+| 16 GB unified | E2B, E4B |
+| 32 GB unified | E2B, E4B, **26B MoE** ✅ |
+| 48 GB+ unified | All four models including 31B |
+
+One caveat: Mac unified memory bandwidth (even M5 Max at 614 GB/s) is slower than dedicated GDDR7 VRAM. The 26B MoE loads and runs on a 32 GB Mac, but inference is slower than on an RTX 4090. Perfectly usable — just not as fast.
+
+---
+
+## How to Deploy Gemma 4 Locally
+
+### Method A: Ollama (3 minutes, terminal required)
+
+**Step 1:** Download Ollama from [ollama.com](https://ollama.com). Windows or macOS, 2-minute install.
+
+<Callout type="warning">
+Use Ollama version 0.20 or later — older versions don't support Gemma 4. Check your version with `ollama --version` before running.
+</Callout>
+
+**Step 2:** Open a terminal and run whichever model size matches your hardware:
+
+```bash
+# E4B — entry model (~5 GB download, 8 GB VRAM)
+ollama run gemma4:e4b
+
+# 26B MoE — recommended (~18 GB download, 16 GB VRAM)
+ollama run gemma4:26b
+
+# 31B — maximum quality (~20 GB download, 24 GB VRAM)
+ollama run gemma4:31b
+```
+
+The first run downloads the model automatically. Depending on your connection speed, expect 15 minutes to over an hour for the larger models. Once downloaded, the conversation starts immediately — no additional setup.
+
+**That's it.** One command, zero configuration.
+
+---
+
+### Method B: LM Studio (GUI, no terminal required)
+
+**Step 1:** Download LM Studio from [lmstudio.ai](https://lmstudio.ai). Available for Windows and macOS.
+
+**Step 2:** Click the search icon on the left sidebar. Type `gemma4` in the search bar. Select your preferred size and look for the **Q4_K_M** quantization variant — it's the best balance of quality and VRAM usage.
+
+**Step 3:** Click download (~18 GB for the 26B). Once downloaded, click the chat icon on the left, select your model from the dropdown at the top, and start chatting.
+
+LM Studio shows real-time VRAM usage in the right panel while the model loads — useful for confirming your hardware can handle it without crashing. The first model load takes 15–30 seconds; subsequent loads are faster.
+
+---
+
+## Gemma 4 vs Qwen3.5-27B: Which Should You Run?
+
+Both are strong local models in the 24–27B range. Here's an honest comparison:
+
+| Task | Gemma 4 26B | Qwen3.5-27B | Edge |
+|---|---|---|---|
+| Math / reasoning | 88.3% AIME 2026 | Competitive | Gemma 4 slightly |
+| English tasks | Excellent | Excellent | Tie |
+| Coding | Strong | Strong | Tie |
+| Chinese language | Limited | Native | Qwen3.5 |
+| Inference speed | Fast (MoE) | Standard | Gemma 4 |
+| VRAM required | 16 GB (26B MoE) | 20 GB (27B dense) | Gemma 4 |
+
+**Bottom line:** If your workload is primarily English-language — especially math, science, or structured reasoning — Gemma 4 26B is a great choice and runs on less VRAM. If you need strong Chinese language support, code generation, or extended conversational tasks, Qwen3.5-27B has the edge. Both are worth having installed; they complement each other well.
+
+---
+
+## Related Guides
+
+- [What PC Specs Do You Need to Run an LLM Locally?](/guides/what-specs-to-run-llm-locally-2026)
+- [LLM Leaderboard 2026: Best Models Ranked](/blog/llm-leaderboard-2026)
+- [Qwen3.5-35B Uncensored: Hardware and Deployment Guide](/models/qwen3-5-35b-uncensored-setup-guide)
+- [AMD 395 vs Mac M5 Max vs DGX Spark](/guides/amd-395-vs-mac-m5-vs-dgx-spark-local-llm-2026)

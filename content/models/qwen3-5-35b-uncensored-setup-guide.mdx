@@ -1,0 +1,183 @@
+---
+title: "Qwen3.5-35B Uncensored: Hardware Requirements and Local Deployment Guide"
+date: "2026-04-03"
+excerpt: "The uncensored Qwen3.5-35B just hit #1 on open-source model charts. Here's exactly what hardware you need to run it locally — and two ways to get it up and running."
+category: "models"
+tags: ["qwen", "uncensored", "deployment", "ollama", "lm-studio", "moe"]
+models: ["qwen"]
+featured: true
+affiliateDisclosure: true
+---
+
+*Last updated: April 2026*
+
+A community-fine-tuned, uncensored variant of Qwen3.5-35B recently climbed to the top of the open-source model leaderboards. It's not an official Alibaba release — it's a community fine-tune that removes the content filtering built into the base model, making it one of the most capable unrestricted models available for local deployment right now.
+
+The specific model we're covering:
+**[HauhauCS/Qwen3.5-35B-A3B-Uncensored-HauhauCS-Aggressive](https://huggingface.co/HauhauCS/Qwen3.5-35B-A3B-Uncensored-HauhauCS-Aggressive)**
+
+Let's talk about what makes this model interesting, what you need to run it, and how to get it running.
+
+---
+
+## Why Is Everyone Talking About This Model?
+
+### The MoE Architecture Advantage
+
+Qwen3.5-35B uses a **Mixture of Experts (MoE)** architecture. This is the key to understanding why it's such an interesting model for local deployment.
+
+Instead of activating all 35 billion parameters for every token, MoE models route each computation through only a subset of "expert" layers. In this model's case, **only ~3B parameters are active at any given moment**, even though the full model has 35B parameters.
+
+What this means practically:
+
+- **VRAM requirement is much lower than a dense 35B model** — you're getting 35B-level capability at closer to 7B-level resource usage per inference step
+- **Speed on Apple Silicon is surprisingly competitive** — because the memory bandwidth bottleneck is proportional to *active* parameters, not total parameters
+- **Quality punches above its weight** — the full 35B parameter pool is still available for specialization; routing just means only the relevant experts activate per token
+
+<Callout type="info">
+MoE is the same architecture behind models like Mixtral and several frontier models. The tradeoff: total model size (and VRAM to load it) is larger than a pure 7B model, but inference speed is closer to 7B than to 35B. It's a genuinely clever architecture for local deployment.
+</Callout>
+
+### No Content Filters
+
+The uncensored fine-tune removes Qwen's built-in content restrictions. This is useful for:
+
+- Fiction and creative writing involving mature themes, complex villains, or morally ambiguous narratives
+- Roleplay scenarios and character work that would trigger refusals in filtered models
+- Research and red-teaming use cases
+- Anyone who's been frustrated by refusals on legitimate creative tasks
+
+This is a locally-run model — no data leaves your machine, and no company's policy applies to what you run on your own hardware.
+
+---
+
+## What Hardware Do You Need?
+
+### The Key Number: ~21 GB VRAM for Q4
+
+The Q4_K_M quantized version of this model comes in at approximately **21 GB**. Add context window overhead and you need at least **24 GB of VRAM** to run it comfortably on a GPU.
+
+On a Mac with Apple Silicon unified memory, **32 GB of unified memory** is the minimum — the model needs to fit alongside the OS and other processes.
+
+### Option A: Dedicated GPU (Windows / Linux Desktop)
+
+With 24+ GB VRAM, your consumer GPU options are limited to a short list:
+
+**RTX 4090 — 24 GB VRAM**
+The most widely available 24 GB consumer GPU in the US market. Runs this model's Q4 quantization without breaking a sweat.
+
+**RTX 5090 — 32 GB VRAM**
+The current-generation flagship. More VRAM than you strictly need for this model, but gives you headroom for larger context windows and future models.
+
+**RTX 3090 — 24 GB VRAM**
+Still a valid option if you can find one at a good price. Older architecture but the 24 GB VRAM handles Q4 quantization just fine. Inference will be slower than the 4090 or 5090, but it works.
+
+**Full desktop build recommendation (RTX 4090):**
+
+| Component | Recommendation | Est. Price |
+|---|---|---|
+| CPU | AMD Ryzen 7 9700X | ~$320 |
+| Motherboard | B850M | ~$180 |
+| RAM | 64 GB DDR5 (2×32 GB) | ~$160 |
+| GPU | RTX 4090 24 GB | ~$1,999 |
+| Storage | 2 TB NVMe Gen4 SSD | ~$160 |
+| PSU | 1,000W 80+ Gold | ~$150 |
+| Case + Cooling | 360mm AIO + mid-tower | ~$200 |
+| **Total** | | **~$3,170** |
+
+---
+
+### Option B: Apple Silicon Mac (Unified Memory)
+
+This is where things get interesting. Because of the MoE architecture's lower active-parameter count per inference step, this model runs better on Apple Silicon than a dense 27B model of equivalent quality would.
+
+The standard advice about Macs being slow for LLMs applies less here. The memory bandwidth bottleneck is partially offset by MoE's efficient inference pattern.
+
+**Minimum: 32 GB unified memory**
+The Q4 model at ~21 GB needs this to coexist with macOS and any other running apps.
+
+**MacBook Air M5 — 32 GB**
+The best portable option. M5 chip, 32 GB unified memory, good sustained inference performance for a fanless machine.
+
+**Mac mini M4 — 32 GB**
+More cost-effective than the MacBook Air, and the M4 chip handles this model well. The 32 GB version is the one you want — the base 16 GB model won't fit the Q4 quantization.
+
+<Callout type="tip">
+**Which should you choose?** If you're already in the Apple ecosystem or want portability, the Mac route is genuinely compelling for this specific model — it's not the compromised experience you might expect. If you want maximum inference speed, plan to run multiple models simultaneously, or are building out a PC anyway, the RTX 4090 desktop wins on raw throughput.
+</Callout>
+
+---
+
+## How to Deploy It
+
+### Method A: Ollama (Recommended if you're comfortable with a terminal)
+
+Ollama is the most widely used local model manager. Fast, lightweight, and handles model downloads automatically.
+
+**Step 1:** Download and install Ollama from [ollama.com](https://ollama.com). Available for Windows, macOS, and Linux.
+
+**Step 2:** Open a terminal and run the model pull command. Check the model's Hugging Face page for the exact Ollama command — it's usually listed in the model card.
+
+**Step 3:** The first run downloads the model automatically (~20 GB — give it time on a slower connection). After download, it starts immediately.
+
+```bash
+# Example command structure (verify on the model's HuggingFace page)
+ollama run hf.co/HauhauCS/Qwen3.5-35B-A3B-Uncensored-HauhauCS-Aggressive:Q4_K_M
+```
+
+<Callout type="tip">
+**Mac users:** Search for MLX-format versions of this model on Hugging Face. MLX is Apple's optimized ML framework and offers noticeably faster inference on Apple Silicon compared to the standard GGUF format.
+</Callout>
+
+---
+
+### Method B: LM Studio (Recommended for beginners — no terminal required)
+
+LM Studio is a desktop app with a full GUI. Point, click, download, run.
+
+**Step 1:** Download LM Studio from [lmstudio.ai](https://lmstudio.ai). Available for Windows and macOS.
+
+**Step 2:** In the search bar, paste the model name:
+```
+HauhauCS/Qwen3.5-35B-A3B-Uncensored-HauhauCS-Aggressive
+```
+
+**Step 3:** Select the **Q4_K_M** quantization version and download (~20 GB).
+
+**Step 4:** Load the model and start chatting in the built-in interface.
+
+LM Studio's key advantage: it displays real-time VRAM usage while the model loads. You can see exactly how much headroom you have before committing to a conversation with a large context.
+
+---
+
+## Common Issues
+
+**"Model won't load / crashes on startup"**
+Almost always a VRAM issue. Make sure you have 24 GB of VRAM free, not just total. Close other GPU-heavy applications (games, other models, video editing software) before loading.
+
+**"Download stalled at a weird percentage"**
+Large model files (~20 GB) sometimes stall on slower connections. In Ollama, Ctrl+C to cancel and re-run the command — it resumes where it left off. In LM Studio, use the pause/resume button.
+
+**"Inference is very slow on Mac"**
+Make sure no other memory-heavy apps are running. This model needs ~21 GB, and macOS itself uses 4–6 GB. On a 32 GB machine, that's tight. Quit everything else before loading.
+
+**"First load takes forever"**
+Normal. The first time a model loads, the GGUF file gets processed and partially cached. Subsequent loads are significantly faster.
+
+---
+
+## How Does It Compare?
+
+To put capability in context:
+
+- **Versus standard Qwen3.5-35B:** Same architecture and base capability, no content filtering. Creative and roleplay tasks work without refusals.
+- **Versus GPT-4o / Claude 3.7:** Frontier commercial models still have an edge on complex reasoning and instruction-following. This is not a replacement for frontier APIs — it's a highly capable local alternative with no usage restrictions.
+- **Versus local 7B/9B models:** Noticeably better reasoning, longer coherent outputs, more nuanced responses. The quality jump is real.
+
+---
+
+## Related Guides
+
+- [What PC Specs Do You Need to Run an LLM Locally? (2026)](/guides/what-specs-to-run-llm-locally-2026)
+- [What Is OpenClaw? Setup Guide and PC Requirements](/models/what-is-openclaw-setup-guide)
+- [Why Run AI Locally? 8 Real Use Cases](/blog/why-run-ai-locally-use-cases-2026)

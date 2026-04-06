@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode variables (备用，主要用 dark) */
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+  }
+
+  .dark {
+    --bg: #070d1a;
+    --surface: #0a1628;
+    --surface-2: #0f1f38;
+    --border: #1e3652;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+  }
+
+  * {
+    @apply border-[var(--border)];
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[var(--bg)] text-[var(--text)] antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-navy-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-navy-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-600;
+  }
+}
+
+@layer components {
+  /* Gradient text utility */
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent;
+  }
+
+  /* Glow effect for CTAs */
+  .btn-glow {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    transition: box-shadow 0.3s ease;
+  }
+  .btn-glow:hover {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+  }
+
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:border-brand-500/50 hover:-translate-y-0.5;
+  }
+
+  /* Grid dot background */
+  .dot-grid {
+    background-image: radial-gradient(circle, rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+}
+
+/* Prose overrides for MDX articles */
+.prose pre {
+  @apply rounded-xl border border-navy-600/50;
+}
+
+.prose code:not(pre code) {
+  @apply bg-navy-700 px-1.5 py-0.5 rounded text-brand-300 text-sm font-normal;
+  quotes: none;
+}
+
+.prose code:not(pre code)::before,
+.prose code:not(pre code)::after {
+  content: none;
+}
+
+/* ── Table styles ── */
+.prose table {
+  @apply w-full text-sm border-collapse rounded-xl overflow-hidden;
+  border: 1px solid #1e3652;
+}
+
+.prose thead {
+  @apply bg-navy-700;
+}
+
+.prose thead th {
+  @apply text-brand-300 font-semibold text-left px-4 py-3;
+  border-bottom: 2px solid #1e3652;
+}
+
+.prose tbody tr {
+  @apply border-b border-navy-600/60 transition-colors;
+}
+
+.prose tbody tr:last-child {
+  @apply border-b-0;
+}
+
+.prose tbody tr:nth-child(even) {
+  @apply bg-navy-800/40;
+}
+
+.prose tbody tr:hover {
+  @apply bg-brand-500/5;
+}
+
+.prose tbody td {
+  @apply px-4 py-3 text-[var(--text-muted)] align-top;
+}
+
+.prose tbody td:first-child {
+  @apply font-medium text-[var(--text)];
+}
+
+/* Wrap table in a scrollable container on mobile */
+.prose table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Restore table display after overflow wrapper */
+@media (min-width: 640px) {
+  .prose table {
+    display: table;
+    overflow-x: visible;
+  }
+}
+
+/* Amazon affiliate product card */
+.affiliate-card {
+  @apply border border-navy-600 rounded-xl p-4 bg-navy-800/50 hover:border-brand-500/60 transition-all duration-300;
+}

@@ -1,0 +1,199 @@
+---
+title: "What Is OpenClaw? How to Use It, and What PC Specs Do You Actually Need?"
+date: "2026-04-03"
+excerpt: "OpenClaw isn't a chatbot — it's an AI agent that can actually do things on your computer. Here's what it is, how to get started, and why your hardware requirements might be lower than you think."
+category: "models"
+tags: ["openclaw", "ai-agent", "setup-guide", "getting-started"]
+models: ["openclaw"]
+featured: true
+affiliateDisclosure: false
+---
+
+*Last updated: April 2026*
+
+OpenClaw hit 250,000 GitHub stars faster than any open-source project in history. So what is it, and why does everyone suddenly have a lobster on their desktop?
+
+Here's the short version: **OpenClaw isn't a chatbot. It's an AI agent that can actually operate your computer.** Open a browser, read and write files, send emails, run code — you give it a task, it figures out how to execute it.
+
+That's a genuinely different thing from what most AI tools do. Let's break it down.
+
+---
+
+## What Makes OpenClaw Different from a Regular AI?
+
+Most AI tools — ChatGPT, Claude, DeepSeek, Gemini — follow the same pattern: you ask, it answers. The output is text. *You* still have to go do the thing.
+
+OpenClaw flips that. You describe a task in plain English, and it executes it autonomously:
+
+- "Monitor these three competitor websites and send me a summary of any updates every evening."
+- "Go through my inbox, find all emails from clients in the last week, and organize the key info into a spreadsheet."
+- "Every Monday morning, remind me to update my project report."
+
+The AI doesn't just answer — it *acts*. It has hands, not just a mouth.
+
+<Callout type="info">
+The "lobster" nickname comes from OpenClaw's red lobster logo. "Raising a lobster" became the informal term for running OpenClaw on your own machine — it caught on and stuck.
+</Callout>
+
+Think of it this way: regular AI models are consultants. They give you advice, but you implement it yourself. OpenClaw is more like an intern. You delegate the task, and it handles execution from start to finish.
+
+---
+
+## How OpenClaw Actually Works
+
+OpenClaw itself is just a framework — a body without a brain. The "brain" comes from whichever AI model you plug into it via API.
+
+The setup looks like this:
+
+```
+Your Task (plain English)
+        ↓
+   OpenClaw Framework
+        ↓
+   AI Model API (Claude, GPT-4, etc.)
+        ↓
+   Skills / Tools (browser, files, email...)
+        ↓
+   Task Executed
+```
+
+OpenClaw decides *what* to do, the AI model does the *thinking*, and Skills are the *tools* it uses to take action.
+
+---
+
+## Step-by-Step: How to Get Started
+
+### Step 1 — Download and Install OpenClaw
+
+Go to [openclawdesktop.com](https://openclawdesktop.com) and download the installer. Windows, macOS, and Linux are all supported. Installation takes about two minutes.
+
+### Step 2 — Connect an AI Model API
+
+This is the most important step. OpenClaw needs a "brain" — an AI model accessed via API. Here are your options ranked by practicality for US users:
+
+| Model | Why Consider It | Cost |
+|---|---|---|
+| **Claude (Anthropic)** | Best reasoning, best at complex multi-step tasks | Pay-per-token (~$3–15/million tokens) |
+| **GPT-4o (OpenAI)** | Widely supported, reliable | Pay-per-token |
+| **Groq (Llama / Qwen)** | Free tier available, very fast inference | Free tier + paid |
+| **Together AI** | Cheap open-source model hosting | Low cost |
+| **Local model via Ollama** | Completely free, fully private | Hardware cost only |
+
+For most people starting out: **use Groq's free tier** to test the waters, then upgrade to Claude or GPT-4o once you have a feel for how you'll use it. The free tier is enough to understand what OpenClaw can and can't do.
+
+<Callout type="tip">
+If you want to go fully private with no API costs, you can connect OpenClaw to a locally running model via Ollama. The catch: you need enough hardware to run a capable model (at least a 9B–27B parameter model works well for agentic tasks). More on that below.
+</Callout>
+
+### Step 3 — Install Skills
+
+**This is the step most beginners skip — don't.**
+
+Without Skills, OpenClaw can only chat. Skills are what give it actual capabilities. Think of Skills as plugins:
+
+- A browser-use skill lets it navigate websites
+- A file management skill lets it read and write your local files
+- An email skill connects it to your inbox
+- A code execution skill lets it write and run scripts
+
+You install Skills from the **ClawHub** marketplace inside the app. Start with the official ones before exploring third-party options.
+
+### Step 4 — Give It a Task
+
+Once configured, just talk to it normally. No special syntax, no commands:
+
+*"Check the pricing pages for [Competitor A] and [Competitor B] once a day and let me know if anything changes."*
+
+*"Read my project notes from the Documents folder and draft a weekly status update email."*
+
+OpenClaw will plan out the steps, confirm the approach with you (depending on your settings), and execute.
+
+---
+
+## What PC Specs Do You Need?
+
+Here's where a lot of people get confused. **OpenClaw itself has almost no hardware requirements.** This isn't like running a local LLM — the computational work happens on remote servers (the API you connected to), not on your machine.
+
+OpenClaw is basically a smart task scheduler. It's not crunching numbers locally.
+
+**Minimum specs to run OpenClaw:**
+
+<SpecTable data={[
+  { spec: "OS", value: "Windows 11 / macOS 12+ / Ubuntu 22.04", note: "Older OS versions may have compatibility issues" },
+  { spec: "RAM", value: "4 GB minimum", note: "8 GB recommended for smoother multitasking" },
+  { spec: "Storage", value: "10 GB free space", note: "For the app and cached data" },
+  { spec: "Internet", value: "Stable broadband", note: "Required for continuous API calls" },
+  { spec: "GPU", value: "Not required", note: "Unless you're running a local model as the brain" },
+]} />
+
+A laptop from 2019, a Mac mini, a budget mini PC — any of these run OpenClaw without issue. If you've been running modern software normally, your hardware is fine.
+
+### The One Exception: Running a Local Model as the Brain
+
+If you want to run OpenClaw *without* any API costs — fully offline and private — you can connect it to a local model running through Ollama instead of a cloud API.
+
+In that case, **you need enough hardware to run a capable model locally.** For agentic tasks (where the AI needs to reason through multi-step plans), you really want at least a 9B–27B parameter model. That means:
+
+- **Minimum:** 16 GB VRAM (runs 9B models comfortably)
+- **Recommended:** 24 GB VRAM (runs 27B models — much better reasoning for complex tasks)
+
+For that, check out our full hardware guide:
+👉 [What PC Specs Do You Need to Run an LLM Locally?](/guides/what-specs-to-run-llm-locally-2026)
+
+For most users, though, this isn't necessary. A cheap cloud API is more cost-effective than buying GPU hardware just to avoid API fees.
+
+---
+
+## Managed / Hosted Alternatives
+
+Don't want to install anything? Several companies have launched managed versions of OpenClaw where you just sign up and use it through a web browser:
+
+- **Kimi Claw** (by Moonshot AI) — Hosted version, subscription-based. No setup required.
+- **MaxClaw** (by MiniMax) — Integrated into the MiniMax Agent web interface.
+- **Alibaba Cloud** — One-click OpenClaw deployment with Qwen models, includes free trial credits for new users.
+
+These options are convenient but come with trade-offs: your data passes through their servers (privacy concern), and customization is limited compared to self-hosting.
+
+For US users, the self-hosted route with a Claude or GPT-4o API key is generally the most flexible option.
+
+---
+
+## Security: Don't Skip This Part
+
+OpenClaw's ClawHub skills marketplace had a significant security incident in late 2025 and early 2026. Security researchers found hundreds of malicious skills disguised as helpful tools (crypto assistants, YouTube helpers) that were actually stealing user data and credentials.
+
+**Practical rules to stay safe:**
+
+1. **Only install skills from verified publishers or with large download counts and reviews.** Treat ClawHub like you'd treat browser extensions — be skeptical.
+
+2. **Read the permissions carefully before installing.** A skill that wants access to your cookies, API keys, or financial apps should be treated with extra suspicion.
+
+3. **Be cautious with OAuth connections.** Connecting premium accounts (Claude Pro, Google accounts) through third-party OpenClaw skills has caused account suspensions in some documented cases.
+
+4. **Consider a dedicated machine.** Some users specifically buy a cheap Mac mini or mini PC to run OpenClaw in isolation — separate from their main machine — as a way to contain any potential damage from a compromised skill.
+
+5. **Managed platforms are lower risk.** Kimi Claw, MaxClaw, and similar hosted versions have their own review processes for skills. Not perfect, but more scrutinized than the open marketplace.
+
+---
+
+## The Bottom Line
+
+OpenClaw represents a real shift in how AI gets used — from answering questions to actually completing tasks. That's not hype; the use cases are genuinely useful once it's set up properly.
+
+**Who should use it:**
+- Anyone who wants to automate repetitive computer tasks
+- People who want AI that *acts*, not just *advises*
+- Privacy-focused users willing to set up a local model backend
+
+**Who should probably wait:**
+- If you just want a better chatbot, OpenClaw is overkill — use Claude or ChatGPT directly
+- If you're not comfortable managing API keys and reading skill permissions, the security risks require some baseline tech awareness
+
+**The hardware question, answered simply:** For OpenClaw with a cloud API, any modern computer works. For OpenClaw with a local model backend, you need a real GPU. For most people starting out, start with the cloud API and see if you actually need the local model path before buying hardware.
+
+---
+
+## Related Guides
+
+- [What PC Specs Do You Need to Run an LLM Locally? (2026)](/guides/what-specs-to-run-llm-locally-2026)
+- [How to Run Qwen3.5-35B Locally: Hardware Requirements](/models/qwen3-5-35b-hardware-requirements)

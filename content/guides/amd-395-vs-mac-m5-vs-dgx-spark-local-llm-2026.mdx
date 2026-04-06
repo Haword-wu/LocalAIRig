@@ -1,0 +1,158 @@
+---
+title: "AMD AI Max+ 395 vs MacBook Pro M5 Max vs DGX Spark: Best 128GB Local AI Setup in 2026?"
+date: "2026-04-03"
+excerpt: "Four ways to get 128GB of memory for local LLM deployment — and they perform very differently. Here's an honest breakdown of speed, cost, and who each option is actually for."
+category: "guides"
+tags: ["hardware", "amd", "apple-silicon", "nvidia", "comparison", "unified-memory"]
+featured: true
+affiliateDisclosure: true
+---
+
+*Last updated: April 2026*
+
+**The quick verdict:**
+
+- **AMD Ryzen AI Max+ 395 (128GB)** — ~$2,800. Best value, runs Windows, but output speed is frustratingly slow.
+- **Apple MacBook Pro M5 Max (128GB)** — ~$4,499. Fast enough for real daily use, portable, polished macOS experience.
+- **NVIDIA DGX Spark (128GB)** — ~$3,499. Blistering prefill speed, expandable, but Linux-only and slow on output.
+- **NVIDIA RTX 5090 desktop (32GB GDDR7)** — ~$4,000–5,000 full build. Fastest output by far, but VRAM ceiling limits model size.
+
+All four can load 70B+ quantized models. They do it at very different speeds, for very different prices, on very different operating systems. Let's break it down.
+
+---
+
+## First: What Is "Unified Memory" and Why Does It Matter?
+
+Traditional PCs have two separate memory pools: system RAM for the CPU, and VRAM for the GPU. When you run an LLM, the model has to fit inside GPU VRAM. A model that's larger than your VRAM simply won't run — that's why the RTX 5090's 32 GB is a hard ceiling.
+
+Unified memory means the CPU and GPU share one large pool. Apple Silicon, the AMD AI Max+, and NVIDIA's DGX Spark all work this way. With 128 GB of shared memory, a model can claim as much as it needs, up to that total.
+
+The tradeoff: unified memory bandwidth is slower than dedicated VRAM bandwidth. The RTX 5090's 32 GB of GDDR7 memory moves data at 1,792 GB/s. A 128 GB unified memory system — even a fast one — typically tops out at 273–614 GB/s.
+
+**This is the core tradeoff of this entire comparison:** more capacity vs. faster throughput.
+
+---
+
+## Side-by-Side Specs
+
+Benchmark: Qwen3.5-27B (IQ4 quantization)
+
+| | AMD AI Max+ 395 | Apple M5 Max MBP | NVIDIA DGX Spark | RTX 5090 Desktop |
+|---|---|---|---|---|
+| **Memory** | 128 GB unified | 128 GB unified | 128 GB unified | 32 GB GDDR7 |
+| **Memory bandwidth** | ~256 GB/s | ~614 GB/s | ~273 GB/s | ~1,792 GB/s |
+| **Output speed (27B)** | ~15 tok/s | ~27 tok/s | ~13 tok/s | 80+ tok/s |
+| **Max model size** | ~122B quantized | ~122B quantized | ~122B quantized | ~35B quantized |
+| **US price** | ~$2,800 | ~$4,499 | ~$3,499 | ~$4,000–5,000 |
+| **OS** | Windows / Linux | macOS | Linux (Ubuntu) | Windows / Linux |
+| **Gaming** | Full support | Limited | Not supported | Full support |
+| **Portable** | Mini PC or laptop | Yes | No | No |
+
+**Tokens per second reference:** 10 tok/s ≈ typing speed. 24 tok/s ≈ comfortable reading speed. 50+ tok/s ≈ the text is genuinely racing ahead of you.
+
+---
+
+## Option 1: AMD Ryzen AI Max+ 395 (128 GB) — Best Value, Biggest Compromise
+
+The AI Max+ 395 is AMD's flagship mobile chip: 16-core Zen 5 CPU, 40 RDNA 3.5 GPU compute units, all on one die. The 128 GB LPDDR5X unified memory configuration (up to 96 GB assignable to the GPU) makes it the most affordable path to 128 GB of model memory — significantly cheaper than the Apple or NVIDIA options.
+
+**The case for it:** This is a full Windows machine. You can run local LLMs, do everyday office work, and play AAA games on the same hardware. It's not a dedicated AI box — it's a general-purpose computer that also happens to handle large models. At ~$2,800 for the 128 GB version, nothing else comes close on price.
+
+**The problem:** 256 GB/s of memory bandwidth. Running Qwen3.5-27B at IQ4 quantization gets you around 15 tokens per second. That's the AI typing at roughly your own typing speed — you'll frequently be waiting for it to finish a sentence. For casual use or experimentation, manageable. For heavy daily use, genuinely frustrating.
+
+**Available in two form factors:**
+
+**Who it's for:** Budget-conscious buyers who want 128 GB capacity and a Windows machine they can use for everything. If you only run local AI occasionally — experimenting on weekends, testing models, building prototypes — the slow output speed won't ruin your experience. If you're running local AI heavily all day, 15 tok/s will wear on you.
+
+---
+
+## Option 2: Apple MacBook Pro M5 Max (128 GB) — The Sweet Spot for Daily Use
+
+The M5 Max's standout spec is memory bandwidth: **614 GB/s** — 2.4× faster than the AMD AI Max+ and 2.25× faster than the DGX Spark. That bandwidth advantage translates directly into faster token output.
+
+Running Qwen3.5-27B IQ4: approximately **27 tokens per second**. That's close to comfortable reading speed. The AI keeps up with you, rather than making you wait.
+
+With the MLX framework (Apple's optimized machine learning library for Apple Silicon), performance improves further on supported models — bringing some workloads closer to discrete GPU territory.
+
+**The case for it:** If you use local AI heavily every day, the difference between 15 tok/s (AMD) and 27 tok/s (Apple) is felt in every session. The extra cost buys real daily productivity. Add portability — you can run fully local, private AI from anywhere with no internet — and it becomes hard to argue against for the right user.
+
+macOS is also the best-supported consumer OS for local AI tools. LM Studio, Ollama, and Jan all run excellently on Mac, and the MLX framework continues to improve Apple Silicon performance with each update.
+
+**The case against it:** It's expensive — ~$1,700 more than the AMD option for similar model capacity. macOS gaming support remains limited compared to Windows. If you don't care about portability and want to also play PC games on the same machine, it doesn't make sense.
+
+**Who it's for:** Existing Mac users, people who need portability, and anyone who plans to use local AI heavily enough that the output speed difference materially affects their workflow. If you're going to be running the thing for hours every day, the extra cost is genuinely justified by the experience improvement.
+
+---
+
+## Option 3: NVIDIA DGX Spark (128 GB) — For Researchers, Not Daily Drivers
+
+DGX Spark is NVIDIA's desktop AI workstation: 20-core ARM CPU, Blackwell architecture GPU, 128 GB LPDDR5X unified memory, rated at 1,000 TOPS of AI compute. NVIDIA positions it as "a data center in a box."
+
+The headline numbers are impressive. The actual LLM output speed is... not. Memory bandwidth sits at ~273 GB/s — comparable to the AMD AI Max+. Decoding speed for Qwen3.5-27B comes in around **13 tokens per second**. Similar to AMD, slower than Apple.
+
+**Where DGX Spark actually wins:**
+
+*Prefill speed.* Prefill is how fast the model processes your input before generating output — "reading" your prompt before it starts "writing." DGX Spark's Blackwell architecture is significantly faster at this than the other options. For long-input use cases — analyzing a 50-page document, RAG retrieval over a large knowledge base, processing lengthy code files — this matters more than raw tok/s.
+
+*Scalability.* Up to four DGX Sparks can be interconnected for multi-node inference. Two units roughly double output speed to ~20 tok/s and expand the total memory pool proportionally.
+
+*NVIDIA's software ecosystem.* CUDA, TensorRT, NIM, the full NVIDIA developer stack — all native. If you're doing serious AI research or building AI applications professionally, NVIDIA's tooling is the deepest and most mature.
+
+**The limitations:** DGX Spark runs Ubuntu Linux only. ARM CPU architecture means no Windows, no AAA gaming. This is a single-purpose AI research machine — it is not a daily driver for most people.
+
+**Who it's for:** AI researchers, developers building AI applications professionally, and teams who need native access to NVIDIA's software stack in a local environment. If you work in Linux every day and your workflow revolves around model experimentation, evaluation, and development — DGX Spark is the right tool. If you need a general-purpose computer, it's not.
+
+---
+
+## Option 4: NVIDIA RTX 5090 Desktop (32 GB GDDR7) — Fastest Output, Hard VRAM Ceiling
+
+This is the different kind of option. Instead of unified memory, you get dedicated GPU VRAM — 32 GB of GDDR7 moving at **1,792 GB/s**.
+
+That bandwidth advantage produces dramatically different inference speeds. Qwen3.5-27B at IQ4: **80+ tokens per second.** The AI genuinely races ahead of comfortable reading speed. It feels like a different category of experience.
+
+The Windows ecosystem means CUDA support, a massive troubleshooting community, AAA gaming at 4K — RTX 5090 is a genuinely all-purpose machine in a way that DGX Spark is not.
+
+**The hard limitation:** 32 GB is the ceiling. Qwen3.5-27B fits comfortably. Highly compressed 35B models (Q4) fit. A 70B model? Doesn't fit. You'd need to offload to system RAM, which tanks performance. For models above ~35B, you're looking at either professional cards or multi-GPU setups.
+
+**To go beyond 32 GB on a single GPU:** The RTX Pro 6000 Blackwell offers 96 GB of VRAM — but costs ~$8,000+ for the GPU alone. Two RTX 5090s in a dual-GPU workstation is another path, but power consumption, cooling, and board compatibility add significant complexity and cost.
+
+**Who it's for:** Users primarily targeting 7B–35B models who want maximum inference speed, a Windows environment, and gaming capability. If you don't need to run 70B models and want the fastest possible experience for what you do run — this is the option.
+
+---
+
+## How to Choose
+
+**"I want 128 GB capacity at the lowest cost"**
+→ AMD AI Max+ 395 mini PC or laptop (~$2,800). Accept that 15 tok/s is the tradeoff. Great for experimentation and occasional use.
+
+**"I want 128 GB capacity with usable output speed, for daily work"**
+→ MacBook Pro M5 Max 128 GB (~$4,499). You're paying ~$1,700 more than AMD for 27 tok/s vs 15 tok/s. If you use it heavily every day, that delta is worth it.
+
+**"I'm an AI researcher / developer who lives in Linux"**
+→ DGX Spark (~$3,499). Native NVIDIA tooling, expandable to multi-node, excellent prefill performance. Not a daily driver; a dedicated research machine.
+
+**"I mainly run 7B–35B models and want maximum speed"**
+→ RTX 5090 desktop (~$4,000–5,000 full build). 80+ tok/s is a fundamentally different experience. Windows, CUDA, gaming — all of it works. Just don't expect to run 70B models.
+
+**"Budget is not a constraint"**
+→ MacBook Pro M5 Max for portable daily work + RTX Pro 6000 workstation for heavy inference + DGX Spark for research. Each does something the others don't.
+
+---
+
+## The Bottom Line
+
+The unified memory options (AMD, Mac, DGX Spark) let you run larger models. The dedicated GPU option (RTX 5090) runs smaller models dramatically faster.
+
+For most individual users doing serious daily local AI work, the MacBook Pro M5 Max 128 GB hits the best balance of capacity, speed, and usability — despite being the most expensive of the 128 GB options. The output speed difference between 15 tok/s and 27 tok/s is something you'll feel every single day.
+
+For pure value and experimentation: AMD AI Max+ 395. For pure speed within the 35B size limit: RTX 5090. For research professionals: DGX Spark.
+
+*Hardware prices fluctuate. All pricing reflects US market estimates as of April 2026 and should be treated as approximate.*
+
+---
+
+## Related Guides
+
+- [What PC Specs Do You Need to Run an LLM Locally? (2026)](/guides/what-specs-to-run-llm-locally-2026)
+- [Qwen3.5-35B Uncensored: Hardware Requirements and Deployment Guide](/models/qwen3-5-35b-uncensored-setup-guide)
+- [What Is OpenClaw? Setup Guide and PC Requirements](/models/what-is-openclaw-setup-guide)

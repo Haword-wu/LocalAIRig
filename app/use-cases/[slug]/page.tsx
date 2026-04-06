@@ -8,6 +8,8 @@ import AffiliateDisclosure from '@/components/AffiliateDisclosure'
 import CategoryBadge from '@/components/CategoryBadge'
 import { Calendar, Clock } from 'lucide-react'
 
+export const dynamicParams = false
+
 interface Props {
   params: { slug: string }
 }

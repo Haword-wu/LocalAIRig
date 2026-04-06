@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
+
+export const dynamicParams = false
 import { getSlugs, getPost, formatDate } from '@/lib/mdx'
 import { mdxComponents } from '@/components/MDXComponents'
 import AffiliateDisclosure from '@/components/AffiliateDisclosure'

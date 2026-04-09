@@ -1,6 +1,6 @@
 ---
 title: "What PC Specs Do You Need to Run an LLM Locally? (2026 Guide)"
-date: "2026-04-03"
+date: "2026-04-09"
 excerpt: "VRAM is king. Here's exactly what GPU, RAM, CPU, and storage you need to run large language models locally — without wasting money on the wrong parts."
 category: "guides"
 tags: ["hardware", "getting-started", "gpu", "vram", "ram"]
@@ -14,16 +14,17 @@ Let's cut straight to it: **VRAM is the single most important spec for running L
 
 Here's the cheat sheet before we dive in:
 
-- **0.8B models** — No GPU needed. 16 GB of system RAM is enough.
-- **9B models** — 8 GB VRAM works, but it's tight. 16 GB is the comfortable sweet spot.
-- **27B models** — You need 24 GB VRAM minimum. A 16 GB card won't cut it.
+- **5B models (Gemma 4 E2B)** — Can run on CPU with 16 GB RAM, but an 8 GB GPU makes it usable.
+- **8B models (Gemma 4 E4B)** — 8 GB VRAM works, but it's tight. 16 GB is the comfortable sweet spot.
+- **26B MoE models** — 16 GB VRAM thanks to MoE's efficient architecture.
+- **31B dense models** — 24 GB VRAM minimum.
 - **70B+ models** — Forget consumer GPUs. You're looking at 74 GB+ VRAM, which means multi-GPU or professional cards.
 
 ---
 
 ## Why Should You Even Bother Running AI Locally?
 
-Models like Qwen, LLaMA, and DeepSeek have gotten good enough that a lot of people are ditching API subscriptions entirely. Running locally means:
+Models like Gemma, LLaMA, and Qwen have gotten good enough that a lot of people are ditching API subscriptions entirely. Running locally means:
 
 - **No usage limits** — generate as many tokens as you want
 - **No monthly bill** — buy the hardware once, run it forever
@@ -39,20 +40,26 @@ The catch? You actually have to understand the hardware. Most guides throw aroun
 
 Think of your GPU's VRAM like a desk. The model is a giant blueprint that has to fit flat on that desk to work. If the blueprint is bigger than the desk, you can't spread it out — work stops.
 
-Here's how much VRAM different model sizes actually need (using Qwen as the example, since it's one of the most popular open-source families right now):
+Here's how much VRAM different model sizes actually need (using Gemma 4 as the example, since it's Google's latest open-source release and covers a wide range of sizes):
 
-| Model Size | Example | VRAM at Q4 Quantization | Minimum to Run Comfortably |
+| Model | Actual Size | VRAM at Q4 Quantization | Minimum to Run Comfortably |
 |---|---|---|---|
-| 0.8B | Qwen3.5-0.8B | Under 1 GB | No GPU needed — CPU + 16 GB RAM |
-| 9B | Qwen3.5-9B | ~5–6 GB | 8 GB (tight), 16 GB (smooth) |
-| 27B | Qwen3.5-27B | ~17–20 GB | 24 GB or more |
-| 122B | Qwen3.5-122B | ~74–78 GB | 80 GB+ (multi-GPU or pro cards) |
+| Gemma 4 E2B | 5B total* | ~3.5 GB | CPU + 16 GB RAM (slow), or 8 GB GPU |
+| Gemma 4 E4B | 8B total* | ~5–6 GB | 8 GB (tight), 16 GB (smooth) |
+| Gemma 4 26B | 27B total (MoE) | ~18 GB | 16 GB VRAM |
+| Gemma 4 31B | 33B total | ~20 GB | 24 GB or more |
+
+*A note on Gemma 4's naming: "E2B" and "E4B" refer to the text backbone size (2B and 4B), but each model also includes a vision encoder for image understanding — bringing total parameters to 5B and 8B respectively.
 
 <Callout type="info">
 **What's "quantization"?** It's a compression technique — the model's precision is slightly reduced, shrinking file size dramatically with minimal impact on response quality. Always use quantized models (Q4_K_M is the sweet spot). You get ~90% of the quality at 30% of the VRAM cost.
 </Callout>
 
-**What "9B" means:** The B stands for *billion* — so 9B = 9 billion parameters. More parameters generally means smarter responses, but also more VRAM required.
+<Callout type="info">
+**What's MoE?** Gemma 4 26B uses Mixture of Experts architecture — only a fraction of the 26 billion parameters are active at any moment during inference. This means it loads like a 26B model (~18 GB) but runs with the speed and VRAM efficiency of a much smaller one. It's why 16 GB VRAM can handle it while a dense 26B model would need 24 GB.
+</Callout>
+
+**What "B" means:** The B stands for *billion* — so 8B = 8 billion parameters. More parameters generally means smarter responses, but also more VRAM required.
 
 ---
 
@@ -80,7 +87,7 @@ If a model doesn't fully fit in VRAM, the overflow spills into system RAM. This 
 
 ### Storage: NVMe SSD, No Exceptions
 
-Model files are large. A 9B model at Q4 is around 5–6 GB. A 27B model is ~18 GB. A 72B model is close to 40 GB.
+Model files are large. Gemma 4 E4B at Q4 is around 5 GB. The 26B MoE is ~18 GB. The 31B dense is ~20 GB. And if you keep multiple models around (which you will), storage fills up fast.
 
 If you're loading these from a mechanical hard drive, you're waiting 30–60+ seconds every time you start a model. An NVMe SSD loads the same model in under 5 seconds.
 
@@ -96,9 +103,9 @@ If you're loading these from a mechanical hard drive, you're waiting 30–60+ se
 
 **What you need:** Any PC with 16 GB of RAM.
 
-**What you can run:** Qwen3.5-0.8B — a tiny but functional model that runs purely on CPU. Good for simple Q&A, summarization, and basic translation.
+**What you can run:** Gemma 4 E2B — a 5B multimodal model (2B text backbone + vision encoder) that can run on CPU. Natively accepts image input, and handles basic Q&A, summarization, and simple tasks. With a dedicated 8 GB GPU, it runs noticeably faster.
 
-**Honest assessment:** This tier is mainly for curiosity. The 0.8B model is limited — it won't impress you for anything complex. If you want to actually *use* local AI for real work, you'll need to step up.
+**Honest assessment:** This tier is mainly for curiosity. Small models have real limitations on complex tasks. If you want to actually *use* local AI for real work, you'll need to step up.
 
 <Callout type="tip">
 Honestly, if you're at this tier, you might get better results installing **OpenClaw** and connecting it to a cloud API instead of running locally. Local deployment at this level is more "proof of concept" than daily driver.
@@ -110,7 +117,7 @@ Honestly, if you're at this tier, you might get better results installing **Open
 
 **Who this is for:** Anyone who wants smooth, daily-driver local AI without breaking the bank.
 
-**Why 16 GB and not 8 GB?** The 8 GB version of the 5060 Ti runs 9B models right at the edge of its VRAM limit. Open the model, run something else in the background, and you're crashing. The 16 GB version runs 9B models with room to breathe — it's worth the extra cost.
+**Why 16 GB and not 8 GB?** The 8 GB version of the 5060 Ti runs 8B models (like Gemma 4 E4B) right at the edge of its VRAM limit. Open the model, run something else in the background, and you're crashing. The 16 GB version runs the Gemma 4 26B MoE model — a genuinely capable 26B model — with room to breathe. That jump in model quality is worth the extra cost.
 
 **Full entry-tier build (US market estimates):**
 
@@ -118,26 +125,26 @@ Honestly, if you're at this tier, you might get better results installing **Open
 |---|---|---|
 | CPU | AMD Ryzen 5 5600 | ~$120 |
 | Motherboard | B550 ATX | ~$100 |
-| RAM | 32 GB DDR4 (2×16 GB) | ~$60 |
+| RAM | 32 GB DDR4 (2×16 GB) | ~$200 |
 | GPU | RTX 5060 Ti 16 GB | ~$549 |
-| Storage | 1 TB NVMe SSD | ~$80 |
+| Storage | 1 TB NVMe SSD | ~$150 |
 | PSU | 750W 80+ Gold | ~$80 |
 | Case + Cooling | Mid-tower + air cooler | ~$100 |
-| **Total** | | **~$1,090** |
+| **Total** | | **~$1,300** |
 
-**What you can run:** Qwen3.5-9B and similar lightweight models. Fast responses, handles coding help, writing assistance, and everyday Q&A without breaking a sweat.
+**What you can run:** Gemma 4 26B MoE — fast responses, handles coding help, writing assistance, and everyday Q&A without breaking a sweat. This is a legitimately capable model, not a toy.
 
-**What you can't run:** 27B+ models — not enough VRAM. Don't try to force it; performance will be miserable.
+**What you can't run:** Dense 31B+ models — not enough VRAM. Don't try to force it; performance will be miserable.
 
 ---
 
-### 🟡 Mid-Range Tier: 16 GB or 24 GB VRAM ($750–$2,000 for the GPU)
+### 🟡 Mid-Range Tier: 16 GB or 24 GB VRAM ($750–$3,000 for the GPU)
 
 This tier splits into two meaningful sub-levels based on what you actually want to run.
 
-**Option A — 16 GB VRAM (RTX 5070 Ti):** Significantly faster inference than the entry tier for 9B models. The output speed jump is noticeable. However — 27B models need 17–20 GB of VRAM, which means they'll overflow into system RAM on a 16 GB card. It'll technically run, but slowly. Not recommended if 27B is your target.
+**Option A — 16 GB VRAM (RTX 5070 Ti):** Significantly faster inference than the entry tier for MoE models. The output speed jump is noticeable. Gemma 4 26B MoE runs well here. However, dense 31B models need 20+ GB, which means they'll overflow into system RAM on a 16 GB card.
 
-**Option B — 24 GB VRAM (RTX 4090):** This is the real mid-range sweet spot for serious local AI. 24 GB handles Qwen3.5-27B comfortably — and at that scale, you're getting response quality that competes with GPT-4 for most tasks. Writing, coding, long-form analysis — it handles all of it.
+**Option B — 24 GB VRAM (RTX 4090):** This is the real mid-range sweet spot for serious local AI. 24 GB handles the Gemma 4 31B dense model comfortably — and at that scale, you're getting response quality that competes with GPT-4 for most tasks. Writing, coding, long-form analysis — it handles all of it.
 
 **Full mid-range build (24 GB tier):**
 
@@ -145,12 +152,12 @@ This tier splits into two meaningful sub-levels based on what you actually want 
 |---|---|---|
 | CPU | AMD Ryzen 7 9700X | ~$320 |
 | Motherboard | B850M | ~$180 |
-| RAM | 64 GB DDR5 (2×32 GB) | ~$160 |
-| GPU | RTX 4090 24 GB | ~$1,999 |
-| Storage | 2 TB NVMe Gen4 SSD | ~$160 |
+| RAM | 64 GB DDR5 (2×32 GB) | ~$800 |
+| GPU | RTX 4090 24 GB | ~$3,000 |
+| Storage | 2 TB NVMe Gen4 SSD | ~$350 |
 | PSU | 850W 80+ Gold | ~$120 |
 | Case + Cooling | Mid-tower + air/AIO | ~$150 |
-| **Total** | | **~$3,090** |
+| **Total** | | **~$4,920** |
 
 ---
 
@@ -158,7 +165,7 @@ This tier splits into two meaningful sub-levels based on what you actually want 
 
 **Who this is for:** Power users, small businesses, and developers building private AI tools who need the best single-GPU experience available.
 
-The RTX 5090's 32 GB of VRAM handles 27B models with headroom to spare. You can run highly compressed 72B models (Q2/Q3 quantization), though quality takes a hit at those compression levels. For a truly smooth 70B experience, you'd need a multi-GPU setup or a professional card.
+The RTX 5090's 32 GB of VRAM handles the Gemma 4 31B dense model with headroom to spare. You can also run highly compressed 70B models (Q2/Q3 quantization) from other families like LLaMA or Qwen, though quality takes a hit at those compression levels. For a truly smooth 70B experience, you'd need a multi-GPU setup or a professional card.
 
 **Pair it with:** 64–128 GB DDR5 RAM, 2–4 TB NVMe storage, and a 1,200W PSU minimum. The 5090 pulls serious power — don't cheap out on the power supply.
 
@@ -168,12 +175,12 @@ The RTX 5090's 32 GB of VRAM handles 27B models with headroom to spare. You can 
 |---|---|---|
 | CPU | AMD Ryzen 9 9900X | ~$450 |
 | Motherboard | X870E | ~$300 |
-| RAM | 128 GB DDR5 (4×32 GB) | ~$380 |
-| GPU | RTX 5090 32 GB | ~$2,499 |
-| Storage | 4 TB NVMe Gen5 SSD | ~$400 |
+| RAM | 128 GB DDR5 (4×32 GB) | ~$1,600 |
+| GPU | RTX 5090 32 GB | ~$3,899 |
+| Storage | 4 TB NVMe Gen5 SSD | ~$600 |
 | PSU | 1,200W 80+ Gold Full Modular | ~$200 |
 | Case + Cooling | 360mm AIO + premium case | ~$250 |
-| **Total** | | **~$4,480** |
+| **Total** | | **~$7,300** |
 
 ---
 
@@ -183,7 +190,7 @@ Hardware sorted — now you need software to manage and run the models.
 
 **Ollama** *(recommended if you're comfortable with a terminal)*
 
-Install it, type `ollama run qwen3.5:9b`, and you're done. It downloads the model automatically and starts a conversation in your terminal. Fast, lightweight, supports almost every major open-source model, and has a huge community. This is the standard for local AI deployment in 2026.
+Install it, type `ollama run gemma4:26b`, and you're done. It downloads the model automatically and starts a conversation in your terminal. Fast, lightweight, supports almost every major open-source model, and has a huge community. This is the standard for local AI deployment in 2026.
 
 **LM Studio** *(recommended for beginners)*
 
@@ -203,9 +210,11 @@ NVIDIA's premium pricing is frustrating — but for local AI, the ecosystem adva
 
 ### What About Apple Silicon Macs?
 
-A Mac with 64–96 GB of unified memory can technically *load* large models — but unified memory bandwidth is still slower than dedicated VRAM bandwidth. Models load fine but generate tokens more slowly than a comparably priced PC GPU setup.
+A Mac with 32–96 GB of unified memory is a genuinely solid option for local AI in 2026. Apple's unified memory means the full RAM pool is available for model loading — a 32 GB Mac can load Gemma 4 26B or 31B without issues.
 
-**April 2026 update:** Apple's M5 chips have made meaningful improvements here. If you're buying new and primarily want a Mac, M5 with 64 GB+ RAM is now a genuinely reasonable option for personal use — especially if you value the Mac ecosystem. But if you're buying hardware *specifically* to run local AI, a PC with a dedicated GPU still wins on price-to-performance.
+**The tradeoff:** Unified memory bandwidth (even M5 Max at 614 GB/s) is lower than dedicated GDDR7 VRAM on a 5090 (1,792 GB/s). Models load fine but generate tokens more slowly than a comparably priced PC GPU setup.
+
+**April 2026 recommendation:** If you're already in the Apple ecosystem or want a portable machine, a Mac with 32 GB+ unified memory is a legitimate choice — especially for personal use. If you're building hardware *specifically* for local AI performance, a PC with a dedicated GPU wins on price-to-performance.
 
 ### Why Not "Modded" GPUs?
 
@@ -217,9 +226,9 @@ Skip them. The VRAM chips are often sourced from used mining cards that have alr
 
 ## The Bottom Line
 
-You don't need to spend $5,000 to run a useful local AI. A solid entry-level build in the $1,000–$1,200 range runs 9B models smoothly enough for daily writing assistance, coding help, and Q&A.
+You don't need to spend $5,000 to run a useful local AI. A solid entry-level build around $1,300 runs the Gemma 4 26B MoE model smoothly — and that's a genuinely capable model for daily writing assistance, coding help, and Q&A.
 
-If you want to run 27B models — which is where quality starts genuinely competing with cloud APIs — plan for 24 GB of VRAM. That's the real threshold.
+If you want to run the dense 31B model — where quality takes another step up — plan for 24 GB of VRAM. That's the real threshold.
 
 *Hardware prices change frequently. The estimates above reflect US market prices in early 2026 and should be used as ballpark figures.*
 
@@ -227,6 +236,6 @@ If you want to run 27B models — which is where quality starts genuinely compet
 
 ## Next Steps
 
-- [Best GPUs for Running LLMs Locally in 2026](/guides/best-gpu-for-local-llm-2026)
-- [How to Run Qwen3.5-35B Locally: Hardware Requirements](/models/qwen3-5-35b-hardware-requirements)
-- [OpenClaw Local Setup Guide: What PC Specs Do You Need?](/models/openclaw-local-setup)
+- [Google Gemma 4: Full Hardware Guide and Deployment](/models/gemma4-hardware-requirements-deployment-guide)
+- [Gemma 4 31B Uncensored: Hardware and Deployment Guide](/models/gemma4-31b-uncensored-jailbreak-deployment-guide)
+- [Local LLM Hardware: 4 Mistakes That Will Waste Your Money](/guides/local-llm-hardware-mistakes-buying-guide)

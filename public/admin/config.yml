@@ -2,7 +2,7 @@ backend:
   name: github
   repo: Haword-wu/LocalAIRig
   branch: main
-  base_url: https://sveltia-cms-auth.YOUR_WORKER.workers.dev  # ← Sveltia Auth Worker 地址
+  base_url: https://sveltia-cms-auth.wuhang0822.workers.dev
 
 # 媒体文件存储位置
 media_folder: public/images/uploads

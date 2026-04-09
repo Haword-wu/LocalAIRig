@@ -1,0 +1,131 @@
+---
+title: "Local LLM Hardware: 4 Mistakes That Will Waste Your Money"
+date: "2026-04-09"
+excerpt: "Repackaged server scrap, bandwidth-starved AI PCs, and AMD's Linux-only CUDA problem. Here's what to avoid before you buy hardware for running LLMs locally."
+category: "guides"
+tags: ["hardware", "buying-guide", "gpu", "amd", "nvidia", "dgx-spark", "pitfalls"]
+featured: false
+affiliateDisclosure: true
+---
+
+The local AI hardware market has a problem: a lot of sellers are counting on buyers not knowing what matters.
+
+Repackaged decade-old server parts. AI all-in-ones with impressive specs on paper and unusable performance in practice. AMD GPU deals that seem like a steal until you spend a weekend fighting driver errors. This stuff is everywhere, and none of it is clearly labeled as a bad idea.
+
+Here's what to actually watch out for.
+
+---
+
+## Mistake #1: Buying "AI Workstation" Prebuilts from Unknown Sellers
+
+If you search for "local AI PC" or "LLM workstation" on Amazon, eBay, or similar platforms, you'll find a category of listings that follow a specific pattern: enterprise-sounding names, technical-looking spec sheets, prices that seem surprisingly reasonable.
+
+Open the specs and you'll frequently find things like:
+
+- **Intel Xeon E5-2699 v4** — launched in 2016, discontinued years ago, currently being cleared out of decommissioned data centers
+- **NVIDIA Tesla V100** — a 2017 data center GPU, no consumer driver support, actively EOL
+- **"Modified" RTX 2080 Ti with 22 GB VRAM** — mining cards that have been running 24/7 for years, with unofficial VRAM soldered on
+
+These components are being pulled from enterprise servers at end-of-life, repackaged into new-looking cases, and sold with generous AI-related marketing language. The hardware is real; the value proposition is not.
+
+**The Tesla V100 problem specifically:** It's frequently pitched as an AI card (technically accurate — it was used in AI training rigs in 2017). But it has no gaming driver support, requires Linux for most workloads, and is slower than a modern RTX 4070 for local inference despite the higher price tag these sellers charge.
+
+**The mining card VRAM mod problem:** Modified 2080 Ti cards with expanded VRAM exist and do technically work for model loading. But mining cards have degraded memory reliability from sustained workloads, and the unofficial VRAM mods carry no warranty. They fail at rates that make them a gamble, not a value buy.
+
+**The rule:** If you're buying a prebuilt for local AI work, stick to known system integrators or build it yourself. If a deal on secondhand hardware seems surprisingly good, it usually is.
+
+---
+
+## Mistake #2: Buying the AMD Ryzen AI Max 395 All-in-One for Its 128 GB Unified Memory
+
+The AMD Ryzen AI Max 395 all-in-one machines hit a very specific kind of appeal: 128 GB of unified memory at a price point significantly below NVIDIA's equivalent. On paper, 128 GB means you can load 100B+ parameter models that nothing else in this price range can touch. It sounds like a technical bargain.
+
+In practice, the bottleneck isn't memory size — it's memory bandwidth.
+
+The AMD AI Max 395's unified memory runs at roughly **256 GB/s**. An RTX 5090 has GDDR7 VRAM bandwidth approaching **1,792 GB/s**. That's a 7x difference.
+
+When you're running a large language model locally, inference speed is almost entirely determined by how fast you can move model weights from memory into the compute units. With 256 GB/s of bandwidth, you can fit a 70B model into that 128 GB pool — but it will output tokens slowly enough to make sustained use genuinely frustrating. Think 3–5 tokens per second on models where you'd expect 15–25.
+
+The memory capacity number is real. The usability for large-model inference is limited by a spec that doesn't make it onto the headline.
+
+<Callout type="info">
+**When the 395 makes sense:** It's genuinely useful for memory-bound workloads where bandwidth matters less — certain research tasks, large context document processing, or if you specifically need to load an enormous model and speed is secondary. For typical conversational LLM use? The RTX 5090 or a Mac with fast unified memory handles it better.
+</Callout>
+
+---
+
+## Mistake #3: Buying an 8 GB VRAM Card and Expecting to Do Real Work
+
+The cheapest on-ramp for local LLM work is an 8 GB GPU. It runs models. It feels like a real setup. And then you start actually trying to use it.
+
+At 8 GB VRAM with Q4 quantization, you're looking at:
+- 7B models: works, runs reasonably fast
+- 9B models: fits, but barely — leave little room for context
+
+The problem is that 7B and 9B models have real limitations on complex tasks. Multi-step reasoning, long-form writing, code generation that requires understanding broader context — these are areas where the gap between a 7B and a 27B model is not subtle. It's the difference between a useful tool and a toy.
+
+Most people who get serious about local AI find themselves wanting 27B or 31B-class models within a few months. Those need 16–24 GB of VRAM. The 8 GB card becomes a bottleneck right around the time you understand what local AI is actually capable of.
+
+**If you're buying hardware specifically to run local LLMs:** Target 16 GB VRAM minimum, 24 GB if budget allows. The RTX 5060 Ti 16 GB hits the sweet spot for 2026. 8 GB is fine for experimenting and learning the workflow, but plan to upgrade if you get serious.
+
+---
+
+## Mistake #4: Buying an AMD GPU for Its Better Price-per-GB
+
+AMD GPUs offer more VRAM per dollar at several price points. The RX 9060 XT 16 GB, for example, undercuts comparable NVIDIA cards on price while matching or exceeding them on memory capacity. It sounds like an obvious value play for local AI work.
+
+The problem is the software ecosystem.
+
+Local LLM inference — Ollama, LM Studio, llama.cpp, vLLM, ExLlamaV2, basically everything you'd actually want to run — is built on **NVIDIA's CUDA platform**. CUDA support is assumed in almost every tutorial, quantization tool, and troubleshooting thread you'll encounter.
+
+AMD's equivalent is **ROCm** (Radeon Open Compute). It works — legitimately works — under Linux. Under Windows, ROCm support is limited to a narrow set of GPU models and is explicitly not recommended for production use by AMD's own documentation.
+
+What this means practically:
+
+- On Linux with a supported AMD card: you can run Ollama with ROCm, it works, performance is reasonable
+- On Windows with an AMD card: most tools either don't work or require workarounds that break across updates
+- When you hit errors (and you will): the vast majority of troubleshooting resources assume NVIDIA. AMD-specific help is sparse
+
+The VRAM-per-dollar math that makes AMD look attractive evaporates when you factor in setup time, debugging time, and the features that simply aren't available.
+
+**The exception:** If you're running Linux and specifically want to invest time in the ROCm ecosystem, AMD can work well. If you're on Windows or want the path of least resistance, NVIDIA is the practical choice regardless of the spec sheet comparison.
+
+---
+
+## Bonus: The NVIDIA DGX Spark Is Not a Personal Computer
+
+The DGX Spark is NVIDIA's purpose-built local AI inference device — 128 GB of LPDDR5X unified memory, rated at 1,000 TOPS of AI compute. The spec sheet sounds impressive.
+
+The bandwidth is 273 GB/s. Same situation as the AMD AI Max 395 — similar memory capacity, similar bandwidth ceiling, similar real-world inference speeds. Hands-on testing puts Qwen3.5-27B at around 13 tokens per second on the DGX Spark, roughly matching the AMD 395.
+
+Additionally:
+- **Runs Ubuntu Linux only** — no Windows support
+- **ARM-based CPU** — most desktop applications and games won't run on it
+- **It's a research appliance**, not a general-purpose computer
+
+If you're a researcher who needs to run large models on a dedicated Linux box and has budget for a specialized device, the DGX Spark has a specific use case. For everyone else, it's an expensive piece of hardware that does one thing well and nothing else.
+
+---
+
+## What to Actually Buy
+
+If you've read through the pitfalls and want the short version:
+
+| Situation | Recommendation |
+|---|---|
+| Budget build, getting started | RTX 5060 Ti 16 GB desktop — runs 26B models well |
+| Best performance per dollar | RTX 5080 16 GB or RTX 4090 24 GB (used) |
+| Maximum local performance | RTX 5090 32 GB |
+| Already in Apple ecosystem | Mac with 32 GB+ unified memory |
+| Need huge context / 70B+ models | Mac with 64 GB+ or professional GPU (RTX 6000 Ada) |
+
+The short version: NVIDIA GPU with 16 GB+ VRAM, or Apple Silicon with 32 GB+ unified memory. Everything else involves meaningful tradeoffs that most buyers don't anticipate until after the purchase.
+
+---
+
+## Related Guides
+
+- [What PC Specs Do You Need to Run an LLM Locally?](/guides/what-specs-to-run-llm-locally-2026)
+- [AMD 395 vs Mac M5 Max vs DGX Spark: Full Comparison](/guides/amd-395-vs-mac-m5-vs-dgx-spark-local-llm-2026)
+- [Google Gemma 4: Hardware Requirements and Deployment](/models/gemma4-hardware-requirements-deployment-guide)
+- [LLM Leaderboard 2026: Best Models You Can Run Locally](/blog/llm-leaderboard-2026)

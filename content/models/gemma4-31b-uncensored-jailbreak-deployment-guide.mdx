@@ -1,0 +1,145 @@
+---
+title: "Gemma 4 31B Uncensored: Hardware Requirements and Deployment Guide"
+date: "2026-04-09"
+excerpt: "The jailbroken Gemma 4 31B answers anything a standard model won't — and it's smart enough to be genuinely useful. Here's what hardware you need and how to run it in minutes."
+category: "models"
+tags: ["gemma", "uncensored", "jailbreak", "lm-studio", "31b", "deployment"]
+models: ["gemma"]
+featured: false
+affiliateDisclosure: true
+---
+
+*Published April 2026 — covers the dealignai/Gemma-4-31B-JANG_4M-CRACK release*
+
+Google released Gemma 4 on April 2, 2026. Three days later, it was jailbroken.
+
+The uncensored variant strips the safety filters completely — it won't refuse questions, deflect topics, or lecture you about responsible use. What makes this one worth paying attention to: the jailbreak barely touched the model's reasoning capability. You're getting near-full Gemma 4 31B intelligence without the content restrictions.
+
+For anyone researching sensitive topics, building uncensored applications, or just tired of AI models refusing to engage with straightforward questions — this is currently one of the strongest options you can run locally.
+
+---
+
+## Why This Model Is Different
+
+Most jailbroken models trade capability for compliance removal. The fine-tuning process degrades reasoning quality, and you end up with something that's unrestricted but also noticeably dumber.
+
+Gemma 4 31B uncensored is different. The JANG_4M-CRACK variant preserves the base model's benchmark performance to a degree that's unusual for this kind of modification. Benchmarks and hands-on testing both confirm: the intelligence is largely intact.
+
+The tradeoff is hardware — at ~22.7 GB quantized, this model is larger than many alternatives and pushes the limits of 24 GB VRAM setups.
+
+---
+
+## Hardware Requirements
+
+The quantized model weighs in at approximately **22.7 GB**. Add context window overhead and you're right at the edge of 24 GB VRAM. Here's the honest breakdown:
+
+### GPU Options
+
+**RTX 5090 32 GB** — The recommended desktop GPU for this model. With 32 GB of GDDR7 VRAM, you have comfortable headroom above the model's 22.7 GB footprint. Inference is fast. Context windows are not a problem.
+
+**RTX 4090 24 GB** — Technically fits, but you're at the limit. At 22.7 GB the model leaves very little room for context. Expect slower inference with longer conversations and potential issues with large context windows. Workable, but not ideal.
+
+**RTX 5080 16 GB / RTX 4080 16 GB** — Not enough VRAM. The model won't load at full precision.
+
+<Callout type="info">
+If you have a 24 GB card and want to squeeze this model onto it, try a more aggressive quantization (Q3_K_M instead of Q4) to bring the footprint down a few GB. You'll lose some quality but it will fit.
+</Callout>
+
+### Apple Silicon Mac
+
+Apple's unified memory architecture sidesteps the VRAM problem entirely — the full memory pool is shared between CPU and GPU, so a 32 GB Mac has 32 GB available for model loading.
+
+**32 GB unified memory is the minimum** for this model. It loads, runs, and produces usable output. Inference speed is slower than a dedicated NVIDIA GPU but perfectly reasonable for solo use.
+
+**48 GB and above** gives you comfortable headroom and noticeably smoother performance with longer context windows.
+
+---
+
+## Recommended Hardware Builds
+
+### Option A: RTX 5090 Desktop
+
+The straightforward route if you want the fastest local inference and plan to run multiple large models.
+
+| Component | Recommendation | Est. Price |
+|---|---|---|
+| CPU | AMD Ryzen 7 9700X | ~$280 |
+| Motherboard | B850M | ~$180 |
+| RAM | 64 GB DDR5 (2×32 GB) | ~$160 |
+| GPU | RTX 5090 32 GB | ~$2,000 |
+| Storage | 2 TB NVMe SSD | ~$120 |
+| PSU | 1,200W 80+ Gold Full Modular | ~$180 |
+| Case + Cooling | 360mm AIO + mid-tower case | ~$180 |
+| **Total** | | **~$3,100** |
+
+One honest note on timing: the RTX 5090 launched into high demand and limited supply. Prices fluctuate and availability varies by region. If you can get one at MSRP, the value is solid. Paying significantly over MSRP is harder to justify unless you have specific use cases that demand it.
+
+### Option B: Apple Silicon Mac
+
+The better choice if you're already in the Apple ecosystem, want a portable machine, or prefer not to build a PC.
+
+| Model | Unified Memory | Est. Price | Notes |
+|---|---|---|---|
+| MacBook Air M5 32 GB | 32 GB | ~$1,799 | Portable, fanless — ideal for solo use |
+| Mac mini M4 32 GB | 32 GB | ~$1,099 | Needs a display — best value in the lineup |
+| MacBook Pro M4 Pro 48 GB | 48 GB | ~$2,399 | Extra headroom, fan-cooled for sustained loads |
+
+<Callout type="info">
+**Mac mini M4 32 GB stock note:** At time of writing, the Mac mini 32 GB config has intermittent availability. Check Apple's website directly — ship times vary week to week.
+</Callout>
+
+**How to choose between the two options:**
+
+- Already on Mac, or budget under $2,000: go with the Mac route
+- Want maximum inference speed, plan to run multiple models simultaneously, or building a dedicated AI workstation: go with the RTX 5090 desktop
+
+---
+
+## How to Deploy
+
+### LM Studio (Recommended — No Terminal Required)
+
+LM Studio is a desktop app with a graphical interface. No command line required.
+
+**Step 1:** Download LM Studio from [lmstudio.ai](https://lmstudio.ai). Available for Windows and macOS.
+
+**Step 2:** Open LM Studio. In the left sidebar, click the search icon. In the search bar, type:
+
+```
+dealignai/Gemma-4-31B-JANG_4M-CRACK
+```
+
+**Step 3:** Select the result and click download. The model is approximately 22.7 GB — download time depends entirely on your connection speed. Expect anywhere from 20 minutes to a couple of hours.
+
+**Step 4:** Once downloaded, click the chat icon in the left sidebar. Select the model from the dropdown at the top of the screen and start a conversation.
+
+<Callout type="warning">
+**Before you download:** Confirm you have at least 25 GB of free disk space (22.7 GB model + room for LM Studio's temp files). First load after download takes 15–30 seconds — this is normal, not a crash.
+</Callout>
+
+That's the full setup. No configuration files, no command line, no driver tweaks required.
+
+---
+
+## Performance Expectations
+
+Inference speed varies significantly by hardware:
+
+| Hardware | Tokens/second (approx.) |
+|---|---|
+| RTX 5090 32 GB | 40–60 tok/s |
+| RTX 4090 24 GB | 30–45 tok/s |
+| Mac M5 Max 64 GB | 20–35 tok/s |
+| Mac M4 Pro 48 GB | 18–28 tok/s |
+| Mac M5 / M4 32 GB | 12–20 tok/s |
+
+For context: 10+ tokens per second feels like real-time conversation. 30+ is noticeably fast. The 32 GB Mac numbers are comfortable for solo use — just don't expect GPU-class speed.
+
+---
+
+## Related Guides
+
+- [Google Gemma 4: Full Hardware Guide (All Sizes)](/models/gemma4-hardware-requirements-deployment-guide)
+- [Qwen3.5-35B Uncensored: Setup Guide](/models/qwen3-5-35b-uncensored-setup-guide)
+- [What PC Specs Do You Need to Run an LLM Locally?](/guides/what-specs-to-run-llm-locally-2026)
+- [LLM Leaderboard 2026: Best Models Ranked](/blog/llm-leaderboard-2026)

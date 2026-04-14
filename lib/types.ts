@@ -50,4 +50,4 @@ export const USE_CASE_LABELS: Record<string, string> = {
 }
 
 // Amazon affiliate tag（注册后替换）
-export const AMAZON_TAG = 'llmrig-20'
+export const AMAZON_TAG = 'localairig-20'

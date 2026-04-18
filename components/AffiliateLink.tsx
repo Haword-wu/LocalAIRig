@@ -58,8 +58,8 @@ export default function AffiliateLink({
         {price && (
           <span className="text-sm font-semibold text-brand-400">{price}</span>
         )}
-        <span className="text-xs px-2 py-1 rounded-md bg-brand-500 text-white font-medium">
-          Amazon
+        <span className="text-xs px-3 py-1.5 rounded-md bg-brand-500 hover:bg-brand-400 text-white font-medium transition-colors whitespace-nowrap">
+          Check price on Amazon →
         </span>
       </div>
     </a>

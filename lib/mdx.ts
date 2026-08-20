@@ -12,7 +12,9 @@ export function getSlugs(category: Category): string[] {
   if (!fs.existsSync(dir)) return []
   return fs
     .readdirSync(dir)
-    .filter((f) => f.endsWith('.mdx'))
+    // Ignore macOS AppleDouble resource-fork files (for example `._post.mdx`).
+    // They mirror filenames but do not contain valid article frontmatter.
+    .filter((f) => f.endsWith('.mdx') && !f.startsWith('._'))
     .map((f) => f.replace(/\.mdx$/, ''))
 }
 
